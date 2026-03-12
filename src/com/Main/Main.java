@@ -1,4 +1,5 @@
 package com.main;
+import java.time.LocalDate;
 import java.util.*;
 
 import com.userregistration.CreateUser;
@@ -14,18 +15,22 @@ import com.authentication.AuthContext;
 import com.authentication.SessionManager;
 import com.contacts.Contact;
 import com.contacts.CreateContact;
+import com.display.BasicContactView;
+import com.display.PrettyContactView;
 import com.exception.InvalidInputException;
 import com.profilemanagement.ProfileHandler;
 
 /*
- *  UC4 :: Create Contact
- * 	Use Builder Pattern for flexible construction and Factory Pattern for different contact types.
-	Store multiple phones/emails in a List.
-	Assign a UUID for unique contact IDs.
-	Track creation and updates with LocalDateTime timestamps.
+ *  UC5 :: View Contact Details
+ * 	Logged-in user views complete details of a contact.
+	Use getter methods to access fields and override toString() for display formatting.
+	Apply the Decorator Pattern to add flexible display formatters.
+	Use Java String formatting for clean output.
+	Handle nullable fields with Optional.
+	Provide immutable view objects to ensure data integrity.
 
 	@author Dilpreet
-	@version 4.0
+	@version 5.0
  */
 
 public class Main {
@@ -44,6 +49,32 @@ public class Main {
 				.build();
 		userList.add(user01);
 		userList.add(user02);
+		
+		 // Creating Dummy Contacts
+        String contactId1 = UUID.randomUUID().toString();
+        List<String> emailList1 = new ArrayList<>(Arrays.asList("soe@gmail.com", "soe.work@gmail.com"));
+        List<String> phoneNoList1 = new ArrayList<>(Arrays.asList("9991112223", "9988443322"));
+        LocalDate date1 = LocalDate.parse("2026-01-02");
+        Contact contact1 = new Contact.Builder("Soe")
+                .contactId(contactId1)
+                .date(date1)
+                .email(emailList1)
+                .phoneNo(phoneNoList1)
+                .build();
+        Main.contactList.put(contactId1, contact1);
+
+        // Contact 02
+        String contactId2 = UUID.randomUUID().toString();
+        List<String> emailList2 = new ArrayList<>(Arrays.asList("david@gmail.com"));
+        List<String> phoneNoList2 = new ArrayList<>(Arrays.asList("8765432198"));
+        LocalDate date2 = LocalDate.parse("2026-02-15");
+        Contact contact2 = new Contact.Builder("David")
+                .contactId(contactId2)
+                .date(date2)
+                .email(emailList2)
+                .phoneNo(phoneNoList2)
+                .build();
+        Main.contactList.put(contactId2, contact2);
 	}
 
 	 public static void main(String[] args) {
@@ -138,6 +169,16 @@ public class Main {
 	            		System.out.println(e.getMessage());
 	            	}
 	            }
+	            case 3:{
+	            	System.out.println("\n Your Contact List : ");
+	            	
+	            	for(Map.Entry<String, Contact> entry : contactList.entrySet()) {
+	            		PrettyContactView view = new PrettyContactView(new BasicContactView());   
+	            		System.out.println(view.display(entry.getValue()));
+	            	}  
+	            	System.out.println("\n");
+	            	break;
+	            }
 	            case 4:{
 	            	System.out.println("Adding a New Contact \n");
 	            	try {
@@ -147,7 +188,6 @@ public class Main {
 	            		System.out.println(e.getMessage());
 	            	}
 	            	break;
-	            	
 	            }
 	            default :{
 	            	end = true;
@@ -155,6 +195,5 @@ public class Main {
 	            }
 	            }
 	        }while(end==false);
-	        
 	    }
 }
