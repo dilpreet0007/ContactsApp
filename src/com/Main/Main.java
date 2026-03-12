@@ -10,23 +10,32 @@ import com.userregistration.UserType;
 
 import java.util.Scanner;
 import java.util.UUID;
-import java.util.*;
 import com.authentication.AuthContext;
 import com.authentication.SessionManager;
 import com.exception.InvalidInputException;
+
+/*
+ * 	Strategy Pattern for different authentication methods, 
+ * 	Singleton for SessionManager
+	Password hashing with MessageDigest, session management, 
+	Optional for handling login results
+	
+	@author Dilpreet
+	@version 2.0
+ */
 
 public class Main {
     public static List<User> userList = new ArrayList<>();
 
     // Static block with demo users
     static {
-        User user01 = new User.Builder("Vivek", UserType.FREE)
-                .email("vivek@gmail.com")
-                .password("vivek1010")
+        User user01 = new User.Builder("David", UserType.FREE)
+                .email("david@gmail.com")
+                .password("David@123")
                 .build();
-        User user02 = new User.Builder("Shreyas", UserType.PREMIUM)
-                .email("shreyas@gmail.com")
-                .password("shreyas1010")
+        User user02 = new User.Builder("Soe", UserType.PREMIUM)
+                .email("Soe@gmail.com")
+                .password("Soe@123")
                 .build();
         userList.add(user01);
         userList.add(user02);
