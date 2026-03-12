@@ -1,10 +1,12 @@
 package com.validation;
 
+import com.exception.InvalidInputException;
+
 public class NameValidator {
-	public static boolean validateName(String name) {
+	public static boolean validateName(String name) throws InvalidInputException{
 		if(name.length() >20 || name.length()<2) {
-			return false;
+			throw new InvalidInputException("Name is Invalid !.");
 		}
-		return true;
+		else return true;
 	}
 }
