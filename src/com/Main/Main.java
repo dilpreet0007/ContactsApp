@@ -15,22 +15,22 @@ import com.authentication.AuthContext;
 import com.authentication.SessionManager;
 import com.contacts.Contact;
 import com.contacts.CreateContact;
+import com.contactsmanagement.EditContactHandler;
 import com.display.BasicContactView;
 import com.display.PrettyContactView;
 import com.exception.InvalidInputException;
 import com.profilemanagement.ProfileHandler;
 
 /*
- *  UC5 :: View Contact Details
- * 	Logged-in user views complete details of a contact.
-	Use getter methods to access fields and override toString() for display formatting.
-	Apply the Decorator Pattern to add flexible display formatters.
-	Use Java String formatting for clean output.
-	Handle nullable fields with Optional.
-	Provide immutable view objects to ensure data integrity.
+ *  UC6 :: Edit Contact
+ * 	Logged-in user edits contact details.
+	Setter methods validate updated values.
+	Copy constructor ensures safe modifications.
+	Command Pattern enables undo/redo.
+	Memento Pattern preserves previous states.
 
 	@author Dilpreet
-	@version 5.0
+	@version 6.0
  */
 
 public class Main {
@@ -151,7 +151,7 @@ public class Main {
 	        System.out.println("-----------------------------");
 	        boolean end = false;
 	        do {
-	        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. End ");
+	        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. End ");
 	            System.out.print(" : ");
 	            int ch = sc.nextInt();
 	            sc.nextLine();
@@ -188,6 +188,11 @@ public class Main {
 	            		System.out.println(e.getMessage());
 	            	}
 	            	break;
+	            }
+	            case 5:{
+	            	EditContactHandler handler = new EditContactHandler();
+	                handler.editContact(sc, contactList);
+	                break;
 	            }
 	            default :{
 	            	end = true;

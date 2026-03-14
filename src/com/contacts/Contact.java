@@ -1,5 +1,11 @@
 package com.contacts;
 import java.util.*;
+
+import com.exception.InvalidInputException;
+import com.validation.EmailValidator;
+import com.validation.NameValidator;
+import com.validation.PhoneNoValidator;
+
 import java.time.*;
 
 
@@ -55,6 +61,29 @@ public class Contact {
 		}
 	}
 
+
+	  public void setName(String name) throws InvalidInputException {
+	        NameValidator.validateName(name);
+	        this.name = name;
+	    }
+
+	    public void setEmailList(List<String> emails) throws InvalidInputException {
+	        for (String email : emails) {
+	            EmailValidator.validateEmail(email);
+	        }
+	        this.emailList = emails;
+	    }
+
+	    public void setPhoneNoList(List<String> phones) throws InvalidInputException {
+	        for (String phone : phones) {
+	            PhoneNoValidator.validatePhoneNo(phone);
+	        }
+	        this.phoneNoList = phones;
+	    }
+
+	    public void setDate(LocalDate date) {
+	        this.date = date;
+	    }
 
 	public String getName() {return name;}
 
