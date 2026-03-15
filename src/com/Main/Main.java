@@ -25,18 +25,19 @@ import com.exception.InvalidInputException;
 import com.filter.FilterHandler;
 import com.profilemanagement.ProfileHandler;
 import com.search.SearchContactHandler;
+import com.tags.ApplyTagsHandler;
 import com.tags.TagManagementHandler;
 
 /*
- *  UC11 :: Create and Manage Tags
- * 	Logged-in user creates and manages custom tags.
-	Tag class enforces validation rules.
-	Contacts and tags form a many-to-many relationship.
-	Flyweight Pattern shares tag instances efficiently.
-	Java uses Set for uniqueness, equals/hashCode for identity, and EnumSet for predefined tags.
+ *  UC12 :: Apply Tags to Contacts
+ * 	Logged-in user assigns tags to contacts.
+	Association class manages Contact-Tag relationship.
+	Observer Pattern updates UI when tags change.
+	Java Set operations handle add/remove.
+	Bidirectional relationship ensures consistency.
 
 	@author Dilpreet
-	@version 11.0
+	@version 12.0
  */
 
 public class Main {
@@ -84,164 +85,171 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        boolean isLoggedIn = false;
-        User loggedInUser=null;
-        try {
-            System.out.println("---------------------------------------------");
-            System.out.println("----- Welcome to MyContacts Application -----");
-            System.out.println("---------------------------------------------");
-            System.out.print("\n 1. Register \n 2. Login \n : ");
-            String choiceStr = sc.nextLine();
+		Scanner sc = new Scanner(System.in);
+		boolean isLoggedIn = false;
+		User loggedInUser=null;
+		try {
+			System.out.println("---------------------------------------------");
+			System.out.println("----- Welcome to MyContacts Application -----");
+			System.out.println("---------------------------------------------");
+			System.out.print("\n 1. Register \n 2. Login \n : ");
+			String choiceStr = sc.nextLine();
 
-            int choice;
-            try {
-                choice = Integer.parseInt(choiceStr);
-            } catch (NumberFormatException e) {
-                throw new InvalidInputException("Invalid choice. Please enter 1 for Register or 2 for Login.");
-            }
+			int choice;
+			try {
+				choice = Integer.parseInt(choiceStr);
+			} catch (NumberFormatException e) {
+				throw new InvalidInputException("Invalid choice. Please enter 1 for Register or 2 for Login.");
+			}
 
-            if (choice == 1) {
-                User user = RegistrationHandler.handleRegistration(sc);
-                userList.add(user); 
-                System.out.println("Registration successful for: " + user.getEmail());
-            } else if (choice == 2) {
-                System.out.println("Choose login type: basic / oauth");
-                String loginType = sc.nextLine();
+			if (choice == 1) {
+				User user = RegistrationHandler.handleRegistration(sc);
+				userList.add(user); 
+				System.out.println("Registration successful for: " + user.getEmail());
+			} else if (choice == 2) {
+				System.out.println("Choose login type: basic / oauth");
+				String loginType = sc.nextLine();
 
-                if (!loginType.equalsIgnoreCase("basic") && !loginType.equalsIgnoreCase("oauth")) {
-                    throw new InvalidInputException("Invalid login type entered. Please choose 'basic' or 'oauth'.");
-                }
+				if (!loginType.equalsIgnoreCase("basic") && !loginType.equalsIgnoreCase("oauth")) {
+					throw new InvalidInputException("Invalid login type entered. Please choose 'basic' or 'oauth'.");
+				}
 
-                AuthContext context = new AuthContext();
-                context.setStrategy(loginType);
+				AuthContext context = new AuthContext();
+				context.setStrategy(loginType);
 
-                System.out.print("Enter email: ");
-                String email = sc.nextLine();
-                if (email == null || email.isEmpty()) {
-                    throw new InvalidInputException("Email cannot be empty.");
-                }
+				System.out.print("Enter email: ");
+				String email = sc.nextLine();
+				if (email == null || email.isEmpty()) {
+					throw new InvalidInputException("Email cannot be empty.");
+				}
 
-                System.out.print("Enter password: ");
-                String password = sc.nextLine();
-                if (password == null || password.isEmpty()) {
-                    throw new InvalidInputException("Password cannot be empty.");
-                }
+				System.out.print("Enter password: ");
+				String password = sc.nextLine();
+				if (password == null || password.isEmpty()) {
+					throw new InvalidInputException("Password cannot be empty.");
+				}
 
-                
-                loggedInUser = context.login(email, password);
-                if (loggedInUser != null) {
-                	isLoggedIn = true;
-                    if (loginType.equalsIgnoreCase("oauth")) {
-                        String token = UUID.randomUUID().toString();
-                        SessionManager sm = SessionManager.startSession();
-                        sm.createSession(token, loggedInUser);
-                        System.out.println("Login successful! Session ID: " + token);
-                    } else {
-                        System.out.println("Login successful with Basic Auth!");
-                    }
-                } else {
-                    System.out.println("Login failed. Invalid credentials.");
-                }
-            } else {
-                throw new InvalidInputException("Invalid choice. Please enter 1 for Register or 2 for Login.");
-            }
-        } catch (InvalidInputException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-        
-        
-        if(isLoggedIn==false)return;
-        
-        System.out.println("\n\n----Welcome "+loggedInUser.getName()+"----");
-        System.out.println("-----------------------------");
-        boolean end = false;
-        do {
-        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. Delete a contact \n 7. Bulk Delete/Export \n 8. Search Contact \n 9. Contact Someone \n 10. Filter Contacts \n 11. View/Add Tags \n 12. End");
-            System.out.print(" : ");
-            int ch = sc.nextInt();
-            sc.nextLine();
-            
-            switch(ch) {
-            case 1:{
-            	System.out.println("Your Profile Info : ");
-            	System.out.println(loggedInUser);
-            	break;
-            }
-            case 2:{
-            	try {
-            		ProfileHandler.updateProfile(loggedInUser, sc);
-            	}catch(InvalidInputException e) {
-            		System.out.println(e.getMessage());
-            	}
-            }
-            case 3:{
-            	System.out.println("\n Your Contact List : ");
-            	
-            	for(Map.Entry<String, Contact> entry : contactList.entrySet()) {
-            		PrettyContactView view = new PrettyContactView(new BasicContactView());   
-            		System.out.println(view.display(entry.getValue()));
-            	}  
-            	System.out.println("\n");
-            	break;
-            }
-            case 4:{
-            	System.out.println("Adding a New Contact \n");
-            	try {
-            		Contact contact = CreateContact.createContact(sc);
-            		System.out.println("\nSuccessfull added contact : "+contact);
-            	}catch(InvalidInputException e) {
-            		System.out.println(e.getMessage());
-            	}
-            	break;
-            }
-            case 5:{
-            	EditContactHandler handler = new EditContactHandler();
-                handler.editContact(sc, contactList);
-                break;
-            }
-            case 6: {
-                DeleteContactHandler handler = new DeleteContactHandler();
-                handler.deleteContact(sc, contactList);
-                break;
-            }
-            case 7:{
-            	 BulkOperationHandler handler = new BulkOperationHandler();
-            	    handler.performBulkOperation(sc, contactList);
-            	    break;
-            }
-            case 8: {
-                SearchContactHandler handler = new SearchContactHandler();
-                try {
-                	 handler.searchContacts(sc, contactList);
-                     
-                }catch(InvalidInputException e) {
-                	System.out.println(e.getMessage());
-                }                
-                break;               
-            }      
-            case 9:{
-            	ContactSomeoneHandler handler = new ContactSomeoneHandler();
-                handler.contactSomeone(sc, contactList);
-                break;
-            }
-            case 10:{
-            	FilterHandler handler = new FilterHandler();
-                handler.filterContacts(sc, contactList);
-                break;
-            }
-            case 11:{
-            	System.out.println("\n"); 
-            	TagManagementHandler handler = new TagManagementHandler();
-            	    handler.manageTags(sc);
-            	    System.out.println("\n");
-            	    break;
-            }
-            default :{
-            	end = true;
-            	break;
-            }
-            }
-        }while(end==false);
-    }
+
+				loggedInUser = context.login(email, password);
+				if (loggedInUser != null) {
+					isLoggedIn = true;
+					if (loginType.equalsIgnoreCase("oauth")) {
+						String token = UUID.randomUUID().toString();
+						SessionManager sm = SessionManager.startSession();
+						sm.createSession(token, loggedInUser);
+						System.out.println("Login successful! Session ID: " + token);
+					} else {
+						System.out.println("Login successful with Basic Auth!");
+					}
+				} else {
+					System.out.println("Login failed. Invalid credentials.");
+				}
+			} else {
+				throw new InvalidInputException("Invalid choice. Please enter 1 for Register or 2 for Login.");
+			}
+		} catch (InvalidInputException e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+
+
+		if(isLoggedIn==false)return;
+
+		System.out.println("\n\n----Welcome "+loggedInUser.getName()+"----");
+		System.out.println("-----------------------------");
+		boolean end = false;
+		do {
+			System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. Delete a contact \n 7. Bulk Delete/Export \n 8. Search Contact \n 9. Contact Someone \n 10. Filter Contacts \n 11. View/Add Tags \n 12. Apply tags to Contacts \n 13. End");
+			System.out.print(" : ");
+			int ch = sc.nextInt();
+			sc.nextLine();
+
+			switch(ch) {
+			case 1:{
+				System.out.println("Your Profile Info : ");
+				System.out.println(loggedInUser);
+				break;
+			}
+			case 2:{
+				try {
+					ProfileHandler.updateProfile(loggedInUser, sc);
+				}catch(InvalidInputException e) {
+					System.out.println(e.getMessage());
+				}
+			}
+			case 3:{
+				System.out.println("\n Your Contact List : ");
+
+				for(Map.Entry<String, Contact> entry : contactList.entrySet()) {
+					PrettyContactView view = new PrettyContactView(new BasicContactView());   
+					System.out.println(view.display(entry.getValue()));
+				}  
+				System.out.println("\n");
+				break;
+			}
+			case 4:{
+				System.out.println("Adding a New Contact \n");
+				try {
+					Contact contact = CreateContact.createContact(sc);
+					System.out.println("\nSuccessfull added contact : "+contact);
+				}catch(InvalidInputException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+			}
+			case 5:{
+				EditContactHandler handler = new EditContactHandler();
+				handler.editContact(sc, contactList);
+				break;
+			}
+			case 6: {
+				DeleteContactHandler handler = new DeleteContactHandler();
+				handler.deleteContact(sc, contactList);
+				break;
+			}
+			case 7:{
+				BulkOperationHandler handler = new BulkOperationHandler();
+				handler.performBulkOperation(sc, contactList);
+				break;
+			}
+			case 8: {
+				SearchContactHandler handler = new SearchContactHandler();
+				try {
+					handler.searchContacts(sc, contactList);
+
+				}catch(InvalidInputException e) {
+					System.out.println(e.getMessage());
+				}                
+				break;               
+			}      
+			case 9:{
+				ContactSomeoneHandler handler = new ContactSomeoneHandler();
+				handler.contactSomeone(sc, contactList);
+				break;
+			}
+			case 10:{
+				FilterHandler handler = new FilterHandler();
+				handler.filterContacts(sc, contactList);
+				break;
+			}
+			case 11:{
+				System.out.println("\n"); 
+				TagManagementHandler handler = new TagManagementHandler();
+				handler.manageTags(sc);
+				System.out.println("\n");
+				break;
+			}
+			case 12:{
+				ApplyTagsHandler handler = new ApplyTagsHandler();
+				handler.applyTags(sc, contactList);
+				System.out.println("\n");
+				break;
+
+			}
+			default :{
+				end = true;
+				break;
+			}
+			}
+		}while(end==false);
+	}
 }
