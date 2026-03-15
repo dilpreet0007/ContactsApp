@@ -15,26 +15,28 @@ import com.authentication.AuthContext;
 import com.authentication.SessionManager;
 import com.contacts.BulkOperationHandler;
 import com.contacts.Contact;
+import com.contacts.ContactSomeoneHandler;
 import com.contacts.CreateContact;
 import com.contacts.DeleteContactHandler;
 import com.contactsmanagement.EditContactHandler;
 import com.display.BasicContactView;
 import com.display.PrettyContactView;
 import com.exception.InvalidInputException;
+import com.filter.FilterHandler;
 import com.profilemanagement.ProfileHandler;
 import com.search.SearchContactHandler;
 
 /*
- *  UC9 :: Search Contacts
- * 	Logged-in user searches contacts by various fields.
-	SearchCriteria interface supports multiple implementations.
-	Composition enables complex query building.
-	Specification Pattern structures search criteria.
-	Chain of Responsibility processes filter pipeline.
-	Java uses Predicate, Streams, regex, and case-insensitive matching.
+ *  UC10 :: Advanced Filtering
+ * 	Logged-in user applies multiple filters on contacts.
+	Filter interface hierarchy supports different filter types.
+	Composite filters combine multiple conditions seamlessly.
+	Composite Pattern manages combined filters uniformly.
+	Strategy Pattern enables varied filter algorithms.
+	Java uses Comparator, Streams, and functional interfaces for multi-level filtering.
 
 	@author Dilpreet
-	@version 9.0
+	@version 10.0
  */
 
 public class Main {
@@ -155,7 +157,7 @@ public class Main {
         System.out.println("-----------------------------");
         boolean end = false;
         do {
-        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. Delete a contact \n 7. Bulk Delete/Export \n 8. Search Contact \n 9. End ");
+        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. Delete a contact \n 7. Bulk Delete/Export \n 8. Search Contact \n 9. Contact Someone \n 10. Filter Contacts \n 11. End ");
             System.out.print(" : ");
             int ch = sc.nextInt();
             sc.nextLine();
@@ -216,11 +218,18 @@ public class Main {
                 }catch(InvalidInputException e) {
                 	System.out.println(e.getMessage());
                 }                
+                break;               
+            }      
+            case 9:{
+            	ContactSomeoneHandler handler = new ContactSomeoneHandler();
+                handler.contactSomeone(sc, contactList);
                 break;
-               
             }
-
-           
+            case 10:{
+            	FilterHandler handler = new FilterHandler();
+                handler.filterContacts(sc, contactList);
+                break;
+            }
             default :{
             	end = true;
             	break;

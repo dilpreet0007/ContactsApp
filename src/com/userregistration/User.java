@@ -16,7 +16,7 @@ public class User {
     private String phoneNo;
     private UserType userType;
 
-    // Private constructor (only Builder can call this)
+   
     private User(Builder builder) {
         this.name = builder.name;
         this.email = builder.email;

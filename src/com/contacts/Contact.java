@@ -17,7 +17,16 @@ public class Contact {
 	private LocalDate date;
 	private String contactId;
 	private Set<Tag> tags = new HashSet<>();
+	private int contactCount = 0;
 
+	public int getContactCount() {
+	    return contactCount;
+	}
+
+	public void incrementContactCount() {
+	    contactCount++;
+	}
+	
 	private Contact(Builder builder) {
 		this.name = builder.name;
 		this.emailList = builder.emailList;
