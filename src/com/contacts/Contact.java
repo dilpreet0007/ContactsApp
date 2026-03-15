@@ -2,6 +2,7 @@ package com.contacts;
 import java.util.*;
 
 import com.exception.InvalidInputException;
+import com.tags.Tag;
 import com.validation.EmailValidator;
 import com.validation.NameValidator;
 import com.validation.PhoneNoValidator;
@@ -15,7 +16,8 @@ public class Contact {
 	private List<String> phoneNoList = new ArrayList<>();
 	private LocalDate date;
 	private String contactId;
-	
+	private Set<Tag> tags = new HashSet<>();
+
 	private Contact(Builder builder) {
 		this.name = builder.name;
 		this.emailList = builder.emailList;
@@ -24,44 +26,18 @@ public class Contact {
 		this.contactId = builder.contactId;
 	}
 	
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+    }
 	
-	public static class Builder{
-		private String name;
-		private List<String> emailList = new ArrayList<>();
-		private List<String> phoneNoList = new ArrayList<>();
-		private LocalDate date;
-		private String contactId;
-		
-		public Builder(String name) {
-			this.name = name;
-		}
-		
-		public Builder email(List<String> emails) {
-			emailList = emails;
-			return this;
-		}
-		
-		public Builder phoneNo(List<String> phoneNos) {
-			phoneNoList = phoneNos;
-			return this;
-		}
-		
-		public Builder date(LocalDate date) {
-			this.date = date;
-			return this;
-		}
-		
-		public Builder contactId(String contactId) {
-			this.contactId = contactId;
-			return this;
-		}
-		
-		public Contact build() {
-			return new Contact(this);
-		}
-	}
-
-
 	  public void setName(String name) throws InvalidInputException {
 	        NameValidator.validateName(name);
 	        this.name = name;
@@ -97,6 +73,49 @@ public class Contact {
 	
 	@Override
 	public String toString() {
-		return "\nName : "+name+" Emails : "+emailList+" Phone No : "+phoneNoList + " Date Added : "+date+"\n";
+		return "\nName : "+name+" Emails : "+emailList+" Phone No : "+phoneNoList +" Tags : "+tags+" Date Added : "+date+"\n";
 	}
+	
+	
+	public static class Builder{
+		private String name;
+		private List<String> emailList = new ArrayList<>();
+		private List<String> phoneNoList = new ArrayList<>();
+		private LocalDate date;
+		private String contactId;
+		private Set<Tag> tags = new HashSet<>();
+		
+		public Builder(String name) {
+			this.name = name;
+		}
+		
+		public Builder email(List<String> emails) {
+			emailList = emails;
+			return this;
+		}
+		
+		public Builder phoneNo(List<String> phoneNos) {
+			phoneNoList = phoneNos;
+			return this;
+		}
+		
+		public Builder date(LocalDate date) {
+			this.date = date;
+			return this;
+		}
+		
+		public Builder contactId(String contactId) {
+			this.contactId = contactId;
+			return this;
+		}
+		public Builder tags(Set<Tag> tags) {
+			this.tags = tags;
+			return this;
+		}
+		
+		public Contact build() {
+			return new Contact(this);
+		}
+	}
+
 }

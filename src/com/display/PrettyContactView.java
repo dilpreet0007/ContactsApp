@@ -13,6 +13,7 @@ public class PrettyContactView extends ContactViewDecorator {
              + "Emails: " + contact.getEmailList() + "\n"
              + "Phones: " + contact.getPhoneNoList() + "\n"
              + "Date Added: " + contact.getDate() + "\n"
+             + "Tags: "+contact.getTags()+"\n"
              + "-------------------------";
     }
 }

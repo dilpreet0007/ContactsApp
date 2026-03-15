@@ -1,8 +1,11 @@
 package com.contactsmanagement;
 
+
 import java.util.*;
 
 import com.contacts.Contact;
+import com.tags.Tag;
+
 
 public class EditContactHandler {
     private ContactManager manager = new ContactManager();
@@ -57,6 +60,16 @@ public class EditContactHandler {
                 Command cmd = new EditPhoneCommand(contact, newPhoneList);
                 manager.executeCommand(cmd);
                 break;
+            }
+            case 4: {
+                System.out.print("Enter new tags (comma separated): ");
+                String[] tagNames = sc.nextLine().split(",");
+                Set<Tag> newTags = new HashSet<>();
+                for (String t : tagNames) {
+                    if (!t.trim().isEmpty()) {
+                        newTags.add(new Tag(t.trim()));
+                    }
+                }
             }
             default:
                 System.out.println("Invalid choice.");
