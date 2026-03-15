@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.util.*;
 import com.exception.InvalidInputException;
 import com.tags.Tag;
+import com.tags.TagRepository;
 import com.main.Main;
 import com.validation.EmailValidator;
 import com.validation.NameValidator;
@@ -49,7 +50,7 @@ public class CreateContact {
             if (!tagInput.trim().isEmpty()) {
                 String[] tagNames = tagInput.split(",");
                 for (String t : tagNames) {
-                    contact.addTag(new Tag(t.trim()));
+                    contact.addTag(TagRepository.getTag(t.trim()));
                 }
             }
 

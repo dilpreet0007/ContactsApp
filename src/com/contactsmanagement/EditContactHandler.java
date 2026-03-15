@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.contacts.Contact;
 import com.tags.Tag;
+import com.tags.TagRepository;
 
 
 public class EditContactHandler {
@@ -67,7 +68,8 @@ public class EditContactHandler {
                 Set<Tag> newTags = new HashSet<>();
                 for (String t : tagNames) {
                     if (!t.trim().isEmpty()) {
-                        newTags.add(new Tag(t.trim()));
+                    	newTags.add(TagRepository.getTag(t.trim()));
+
                     }
                 }
             }

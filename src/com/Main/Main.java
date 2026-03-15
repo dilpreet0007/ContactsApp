@@ -25,18 +25,18 @@ import com.exception.InvalidInputException;
 import com.filter.FilterHandler;
 import com.profilemanagement.ProfileHandler;
 import com.search.SearchContactHandler;
+import com.tags.TagManagementHandler;
 
 /*
- *  UC10 :: Advanced Filtering
- * 	Logged-in user applies multiple filters on contacts.
-	Filter interface hierarchy supports different filter types.
-	Composite filters combine multiple conditions seamlessly.
-	Composite Pattern manages combined filters uniformly.
-	Strategy Pattern enables varied filter algorithms.
-	Java uses Comparator, Streams, and functional interfaces for multi-level filtering.
+ *  UC11 :: Create and Manage Tags
+ * 	Logged-in user creates and manages custom tags.
+	Tag class enforces validation rules.
+	Contacts and tags form a many-to-many relationship.
+	Flyweight Pattern shares tag instances efficiently.
+	Java uses Set for uniqueness, equals/hashCode for identity, and EnumSet for predefined tags.
 
 	@author Dilpreet
-	@version 10.0
+	@version 11.0
  */
 
 public class Main {
@@ -157,7 +157,7 @@ public class Main {
         System.out.println("-----------------------------");
         boolean end = false;
         do {
-        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. Delete a contact \n 7. Bulk Delete/Export \n 8. Search Contact \n 9. Contact Someone \n 10. Filter Contacts \n 11. End ");
+        	System.out.println(" 1. View Profile \n 2. Update Profile Info \n 3. View Contacts \n 4. Add Contacts \n 5. Edit Contacts \n 6. Delete a contact \n 7. Bulk Delete/Export \n 8. Search Contact \n 9. Contact Someone \n 10. Filter Contacts \n 11. View/Add Tags \n 12. End");
             System.out.print(" : ");
             int ch = sc.nextInt();
             sc.nextLine();
@@ -229,6 +229,13 @@ public class Main {
             	FilterHandler handler = new FilterHandler();
                 handler.filterContacts(sc, contactList);
                 break;
+            }
+            case 11:{
+            	System.out.println("\n"); 
+            	TagManagementHandler handler = new TagManagementHandler();
+            	    handler.manageTags(sc);
+            	    System.out.println("\n");
+            	    break;
             }
             default :{
             	end = true;
